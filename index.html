@@ -1,53 +1,62 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Desa</title>
     <style>
-        body { background-color: #fce38a; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-        .container { background-color: #fce38a; width: 100%; max-width: 400px; text-align: center; }
-        .logo { width: 100px; margin-bottom: 10px; }
-        h2 { margin: 5px 0; }
-        .jam { font-size: 2rem; font-weight: bold; margin-bottom: 5px; }
+        /* CSS: Mengatur tampilan agar seperti aplikasi Android di tengah layar */
+        body { background-color: #d1d1d1; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: sans-serif; }
+        .container { background-color: #fce38a; width: 100%; max-width: 450px; min-height: 100vh; padding: 20px; box-sizing: border-box; box-shadow: 0 0 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; text-align: center; }
         
-        /* Area Kamera */
-        .camera-box { background-color: #00b4f8; height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin: 20px 0; border-radius: 5px; }
+        .logo { width: 80px; margin-bottom: 10px; }
+        h2 { font-size: 1.2rem; margin: 5px 0; }
+        #jam { font-size: 2rem; font-weight: bold; margin: 10px 0; }
         
-        /* Tombol */
-        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        button { flex: 1; padding: 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .btn-masuk { background-color: #00b4f8; color: white; }
-        .btn-pulang { background-color: #e032d6; color: white; }
-        .btn-menu { display: block; width: 100%; padding: 12px; margin-bottom: 10px; background-color: #00b4f8; color: white; border: none; border-radius: 5px; font-weight: bold; }
+        .camera-box { background-color: #00b4f8; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin: 20px 0; border-radius: 10px; }
+        
+        .btn-group { display: flex; width: 100%; gap: 10px; margin-bottom: 20px; }
+        .btn-absensi { flex: 1; padding: 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-masuk { background-color: #00b4f8; }
+        .btn-pulang { background-color: #e032d6; }
+        
+        .btn-menu { display: block; width: 100%; padding: 15px; margin-bottom: 10px; background-color: #00b4f8; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <img src="logo_desa.png" class="logo" alt="Logo Desa">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Logo_of_the_Ministry_of_Villages_of_the_Republic_of_Indonesia.svg/1200px-Logo_of_the_Ministry_of_Villages_of_the_Republic_of_Indonesia.svg.png" class="logo" alt="Logo">
     <h2>ABSENSI DESA TANJUNG NYIUR</h2>
-    <div class="jam" id="jam">14:47:56</div>
+    <div id="jam">00:00:00</div>
     <div id="tanggal">Minggu, 21 Juni 2026</div>
 
-    <div class="camera-box" id="camera-area">TEMPAT PENGAMBILAN GAMBAR</div>
+    <div class="camera-box">TEMPAT PENGAMBILAN GAMBAR</div>
 
     <div class="btn-group">
-        <button class="btn-masuk" onclick="aktifkanKamera()">ABSEN MASUK</button>
-        <button class="btn-pulang" onclick="aktifkanKamera()">ABSEN PULANG</button>
+        <button class="btn-absensi btn-masuk">ABSEN MASUK</button>
+        <button class="btn-absensi btn-pulang">ABSEN PULANG</button>
     </div>
 
-    <button class="btn-menu">Data Perangkat</button>
-    <button class="btn-menu">Riwayat Absen</button>
-    <button class="btn-menu">Laporan Absen</button>
+    <button class="btn-menu" onclick="cekAkses()">Data Perangkat</button>
+    <button class="btn-menu" onclick="cekAkses()">Riwayat Absen</button>
+    <button class="btn-menu" onclick="cekAkses()">Laporan Absen</button>
 </div>
 
 <script>
-    // Update Jam Realtime
+    // FUNGSI JAM
     setInterval(() => {
         document.getElementById('jam').innerText = new Date().toLocaleTimeString();
     }, 1000);
 
-    function aktifkanKamera() {
-        alert("Mengaktifkan Kamera...");
-        // Logika akses kamera akan dimasukkan di sini
+    // FUNGSI LOGIN ADMIN SEDERHANA
+    function cekAkses() {
+        let password = prompt("Masukkan Password Admin:");
+        if (password === "admin123") {
+            alert("Berhasil masuk ke menu!");
+        } else {
+            alert("Password Salah!");
+        }
     }
 </script>
 
