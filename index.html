@@ -61,8 +61,35 @@
     function absen(status) {
         alert("Absen " + status + " berhasil diproses!");
         // Di sini nanti kita sambungkan ke Google Sheets
-    }
+    } function persiapkanAbsen(status) {
+    // 1. Tampilkan area kamera
+    document.getElementById('area-kamera').style.display = 'block';
+    
+    // 2. Aktifkan akses kamera
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+        .then(stream => {
+            document.getElementById('video').srcObject = stream;
+        })
+        .catch(err => alert("Izin kamera diperlukan untuk absensi!"));
+    
+    // Simpan status (Masuk/Keluar) ke variabel global agar bisa dipakai saat klik foto
+    window.statusAbsen = status; 
+}
+
+function ambilFotoDanKirim() {
+    // Logika capture foto dan kirim ke Google Sheets ada di sini
+    alert("Data " + window.statusAbsen + " akan dikirim ke sistem!");
+    // Panggil fungsi google.script.run.prosesAbsen() di sini
+}
 </script>
 
 </body>
-</html>
+</html><div class="btn-group">
+    <button class="btn-masuk" onclick="persiapkanAbsen('Masuk')">ABSEN MASUK</button>
+    <button class="btn-keluar" onclick="persiapkanAbsen('Keluar')">ABSEN KELUAR</button>
+</div>
+
+<div id="area-kamera" style="display:none; text-align:center; margin-top:20px;">
+    <video id="video" autoplay playsinline style="width:100%; border-radius:10px;"></video>
+    <button id="btn-foto" onclick="ambilFotoDanKirim()" style="background:#3498db; width:100%; margin-top:10px;">AMBIL FOTO & KIRIM</button>
+</div>
