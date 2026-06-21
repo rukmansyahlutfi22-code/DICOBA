@@ -1,0 +1,23 @@
+<script>
+  function ambilLokasiDanKirim() {
+    // 1. Ambil lokasi
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var lat = position.coords.latitude;
+      var long = position.coords.longitude;
+      
+      // 2. Kumpulkan data
+      var data = {
+        nama: document.getElementById('nama').value,
+        jabatan: document.getElementById('jabatan').value,
+        keterangan: document.getElementById('keterangan').value,
+        lokasi: lat + ", " + long,
+        foto: "URL_FOTO_DARI_KAMERA" // Integrasikan dengan API kamera
+      };
+      
+      // 3. Kirim ke Apps Script
+      google.script.run.withSuccessHandler(function() {
+        alert("Absen berhasil!");
+      }).prosesAbsen(data);
+    });
+  }
+</script>
