@@ -26,6 +26,12 @@
         <button class="btn-masuk" onclick="absen('Masuk')">ABSEN MASUK</button>
         <button class="btn-keluar" onclick="absen('Keluar')">ABSEN KELUAR</button>
     </div>
+    <canvas> <div id="camera-container" style="display:none;">
+    <video id="video" autoplay playsinline></video>
+</div>
+<canvas id="canvas" style="display:none;"></canvas>
+
+<button class="btn-primary" id="btnAksi" onclick="aktifkanKamera()">Ambil Foto & Absen</button>
 
     <video id="video" autoplay playsinline></video>
     <p><small>Lokasi: <span id="lokasi">Mendeteksi...</span></small></p>
