@@ -1,95 +1,55 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi Desa Tanjung Nyiur</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; width: 100%; max-width: 400px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        #jam { font-size: 3rem; font-weight: bold; color: #2c3e50; margin: 10px 0; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        button { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; }
-        .btn-masuk { background-color: #27ae60; }
-        .btn-keluar { background-color: #e74c3c; }
-        #video { width: 100%; height: 200px; background: #eee; border-radius: 10px; margin: 15px 0; object-fit: cover; }
+        body { background-color: #fce38a; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
+        .container { background-color: #fce38a; width: 100%; max-width: 400px; text-align: center; }
+        .logo { width: 100px; margin-bottom: 10px; }
+        h2 { margin: 5px 0; }
+        .jam { font-size: 2rem; font-weight: bold; margin-bottom: 5px; }
+        
+        /* Area Kamera */
+        .camera-box { background-color: #00b4f8; height: 200px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin: 20px 0; border-radius: 5px; }
+        
+        /* Tombol */
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        button { flex: 1; padding: 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .btn-masuk { background-color: #00b4f8; color: white; }
+        .btn-pulang { background-color: #e032d6; color: white; }
+        .btn-menu { display: block; width: 100%; padding: 12px; margin-bottom: 10px; background-color: #00b4f8; color: white; border: none; border-radius: 5px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h3>Absensi Desa Tanjung Nyiur</h3>
-    <div id="jam">00:00:00</div>
-    <div id="tanggal">--/--/----</div>
+<div class="container">
+    <img src="logo_desa.png" class="logo" alt="Logo Desa">
+    <h2>ABSENSI DESA TANJUNG NYIUR</h2>
+    <div class="jam" id="jam">14:47:56</div>
+    <div id="tanggal">Minggu, 21 Juni 2026</div>
+
+    <div class="camera-box" id="camera-area">TEMPAT PENGAMBILAN GAMBAR</div>
 
     <div class="btn-group">
-        <button class="btn-masuk" onclick="absen('Masuk')">ABSEN MASUK</button>
-        <button class="btn-keluar" onclick="absen('Keluar')">ABSEN KELUAR</button>
+        <button class="btn-masuk" onclick="aktifkanKamera()">ABSEN MASUK</button>
+        <button class="btn-pulang" onclick="aktifkanKamera()">ABSEN PULANG</button>
     </div>
-    <canvas> <div id="camera-container" style="display:none;">
-    <video id="video" autoplay playsinline></video>
-</div>
-<canvas id="canvas" style="display:none;"></canvas>
 
-<button class="btn-primary" id="btnAksi" onclick="aktifkanKamera()">Ambil Foto & Absen</button>
-
-    <video id="video" autoplay playsinline></video>
-    <p><small>Lokasi: <span id="lokasi">Mendeteksi...</span></small></p>
+    <button class="btn-menu">Data Perangkat</button>
+    <button class="btn-menu">Riwayat Absen</button>
+    <button class="btn-menu">Laporan Absen</button>
 </div>
 
 <script>
-    // 1. Menampilkan Jam & Tanggal
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('jam').innerText = now.toLocaleTimeString('id-ID');
-        document.getElementById('tanggal').innerText = now.toLocaleDateString('id-ID', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+    // Update Jam Realtime
+    setInterval(() => {
+        document.getElementById('jam').innerText = new Date().toLocaleTimeString();
+    }, 1000);
+
+    function aktifkanKamera() {
+        alert("Mengaktifkan Kamera...");
+        // Logika akses kamera akan dimasukkan di sini
     }
-    setInterval(updateClock, 1000);
-
-    // 2. Akses Kamera
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-        .then(stream => { document.getElementById('video').srcObject = stream; })
-        .catch(err => { alert("Izin kamera diperlukan!"); });
-
-    // 3. Deteksi Lokasi
-    navigator.geolocation.getCurrentPosition(pos => {
-        document.getElementById('lokasi').innerText = "Tanjung Nyiur (Aktif)";
-    }, () => {
-        document.getElementById('lokasi').innerText = "Lokasi Gagal Didapatkan";
-    });
-
-    function absen(status) {
-        alert("Absen " + status + " berhasil diproses!");
-        // Di sini nanti kita sambungkan ke Google Sheets
-    } function persiapkanAbsen(status) {
-    // 1. Tampilkan area kamera
-    document.getElementById('area-kamera').style.display = 'block';
-    
-    // 2. Aktifkan akses kamera
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-        .then(stream => {
-            document.getElementById('video').srcObject = stream;
-        })
-        .catch(err => alert("Izin kamera diperlukan untuk absensi!"));
-    
-    // Simpan status (Masuk/Keluar) ke variabel global agar bisa dipakai saat klik foto
-    window.statusAbsen = status; 
-}
-
-function ambilFotoDanKirim() {
-    // Logika capture foto dan kirim ke Google Sheets ada di sini
-    alert("Data " + window.statusAbsen + " akan dikirim ke sistem!");
-    // Panggil fungsi google.script.run.prosesAbsen() di sini
-}
 </script>
 
 </body>
-</html><div class="btn-group">
-    <button class="btn-masuk" onclick="persiapkanAbsen('Masuk')">ABSEN MASUK</button>
-    <button class="btn-keluar" onclick="persiapkanAbsen('Keluar')">ABSEN KELUAR</button>
-</div>
-
-<div id="area-kamera" style="display:none; text-align:center; margin-top:20px;">
-    <video id="video" autoplay playsinline style="width:100%; border-radius:10px;"></video>
-    <button id="btn-foto" onclick="ambilFotoDanKirim()" style="background:#3498db; width:100%; margin-top:10px;">AMBIL FOTO & KIRIM</button>
-</div>
+</html>
