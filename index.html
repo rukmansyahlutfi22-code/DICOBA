@@ -1,60 +1,62 @@
-<!-- Bagian Jam Digital Besar -->
-<div class="clock-section text-center py-4">
-    <h1 id="digital-clock" style="font-size: 3rem; font-weight: bold;">00:00:00</h1>
-    <p id="date-display" class="text-muted">Minggu, 21 Juni 2026</p>
-</div>
-<style>
-    preview-box {
-    width: 100%;
-    max-width: 400px;
-    height: 300px;
-    background: #e0e0e0;
-    border: 2px dashed #999;
-    margin: 10px auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Desa Tanjung Nyiur</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; width: 100%; max-width: 400px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        #jam { font-size: 3rem; font-weight: bold; color: #2c3e50; margin: 10px 0; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        button { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-masuk { background-color: #27ae60; }
+        .btn-keluar { background-color: #e74c3c; }
+        #video { width: 100%; height: 200px; background: #eee; border-radius: 10px; margin: 15px 0; object-fit: cover; }
+    </style>
+</head>
+<body>
 
-/* Pastikan video memenuhi kotak */
-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+<div class="card">
+    <h3>Absensi Desa Tanjung Nyiur</h3>
+    <div id="jam">00:00:00</div>
+    <div id="tanggal">--/--/----</div>
 
-<!-- Tombol Absen -->
-<div class="row">
-    <div class="col-6"><button class="btn btn-success w-100">ABSEN MASUK</button></div>
-    <div class="col-6"><button class="btn btn-danger w-100">ABSEN KELUAR</button></div>
-</div>
-
-<!-- Verifikasi Lokasi & Foto -->
-<div class="card mt-3">
-    <div class="card-body">
-        <p><strong><i class="fa fa-map-marker"></i> Lokasi:</strong> <span id="loc">Desa Tanjung Nyiur</span></p>
-        <div id="camera-preview" style="background:#eee; height:200px; border-radius:10px;"></div>
-        <button class="btn btn-primary mt-2">Ambil Foto & Kirim</button>
+    <div class="btn-group">
+        <button class="btn-masuk" onclick="absen('Masuk')">ABSEN MASUK</button>
+        <button class="btn-keluar" onclick="absen('Keluar')">ABSEN KELUAR</button>
     </div>
-    </body>
-    <script>
-    // Fungsi Jam Digital
+
+    <video id="video" autoplay playsinline></video>
+    <p><small>Lokasi: <span id="lokasi">Mendeteksi...</span></small></p>
+</div>
+
+<script>
+    // 1. Menampilkan Jam & Tanggal
     function updateClock() {
         const now = new Date();
-        document.getElementById('digital-clock').innerText = now.toLocaleTimeString('id-ID');
+        document.getElementById('jam').innerText = now.toLocaleTimeString('id-ID');
+        document.getElementById('tanggal').innerText = now.toLocaleDateString('id-ID', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
     }
-    setInterval(updateClock, 1000); // Update setiap detik
-    
-    // Aktifkan Kamera
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-            const video = document.createElement('video');
-            video.srcObject = stream;
-            video.play();
-            // Masukkan elemen video ke kotak abu-abu Anda
-            document.querySelector('.preview-box').appendChild(video);
-        })
-        .catch(err => console.error("Kamera tidak ditemukan", err));
+    setInterval(updateClock, 1000);
+
+    // 2. Akses Kamera
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+        .then(stream => { document.getElementById('video').srcObject = stream; })
+        .catch(err => { alert("Izin kamera diperlukan!"); });
+
+    // 3. Deteksi Lokasi
+    navigator.geolocation.getCurrentPosition(pos => {
+        document.getElementById('lokasi').innerText = "Tanjung Nyiur (Aktif)";
+    }, () => {
+        document.getElementById('lokasi').innerText = "Lokasi Gagal Didapatkan";
+    });
+
+    function absen(status) {
+        alert("Absen " + status + " berhasil diproses!");
+        // Di sini nanti kita sambungkan ke Google Sheets
+    }
 </script>
-</div>
+
+</body>
+</html>
