@@ -3,6 +3,26 @@
     <h1 id="digital-clock" style="font-size: 3rem; font-weight: bold;">00:00:00</h1>
     <p id="date-display" class="text-muted">Minggu, 21 Juni 2026</p>
 </div>
+<style>
+    preview-box {
+    width: 100%;
+    max-width: 400px;
+    height: 300px;
+    background: #e0e0e0;
+    border: 2px dashed #999;
+    margin: 10px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Pastikan video memenuhi kotak */
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 <!-- Tombol Absen -->
 <div class="row">
@@ -17,4 +37,24 @@
         <div id="camera-preview" style="background:#eee; height:200px; border-radius:10px;"></div>
         <button class="btn btn-primary mt-2">Ambil Foto & Kirim</button>
     </div>
+    </body>
+    <script>
+    // Fungsi Jam Digital
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('digital-clock').innerText = now.toLocaleTimeString('id-ID');
+    }
+    setInterval(updateClock, 1000); // Update setiap detik
+    
+    // Aktifkan Kamera
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+            // Masukkan elemen video ke kotak abu-abu Anda
+            document.querySelector('.preview-box').appendChild(video);
+        })
+        .catch(err => console.error("Kamera tidak ditemukan", err));
+</script>
 </div>
