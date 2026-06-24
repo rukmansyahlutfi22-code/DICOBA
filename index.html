@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistem Absensi Desa Modern</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --md-sys-color-primary: #0063ec;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-surface: #f8f9ff;
+            --md-sys-color-surface-container: #ffffff;
+            --md-sys-color-on-surface: #1d1b20;
+            --md-sys-color-on-surface-variant: #49454f;
+            --md-sys-color-outline: #79747e;
+            --md-sys-color-error: #ba1a1a;
+            --md-sys-color-success: #136d3b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        /* Container Utama ala Android App */
+        .app-shell {
+            width: 100%;
+            max-width: 450px;
+            min-height: 100vh;
+            background: var(--md-sys-color-surface-container);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            overflow-x: hidden;
+        }
+
+        /* SCREEN: LOGIN */
+        .screen-login {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--md-sys-color-surface-container);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 32px;
+            transition: transform 0.4s cubic-bezier(0.05, 0.7, 0.1, 1);
+        }
+
+        .screen-login.hidden {
+            transform: translateY(-100%);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-logo-container {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* Android M3 Text Field */
+        .md-text-field {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .md-text-field input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--md-sys-color-outline);
+            border-radius: 16px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+            transition: 0.2s;
+        }
+
+        .md-text-field input:focus {
+            border-color: var(--md-sys-color-primary);
+        }
+
+        /* SCREEN: MAIN APP */
+        .screen-main {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .screen-main.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Header Components */
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 0;
+        }
+        .main-logo { width: 56px; height: 56px; border-radius: 50%; object-fit: cover;}
+        .second-logo { width: 36px; height: 36px; object-fit: contain;}
+        .header-title-text { font-size: 1.15rem; font-weight: 700; }
+
+        /* Modern Clock Display (Card M3) */
+        .clock-card {
+            background: linear-gradient(135deg, #0d47a1, #0063ec);
+            color: white;
+            padding: 24px;
+            border-radius: 28px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,99,236,0.25);
+        }
+        .clock-time { font-size: 2.8rem; font-weight: 700; letter-spacing: -1px; }
+        .clock-date { font-size: 0.95rem; opacity: 0.9; margin-bottom: 12px; font-weight: 500;}
+        .clock-rule { 
+            font-size: 0.75rem; background: rgba(255,255,255,0.15); 
+            padding: 6px 14px; border-radius: 100px; display: inline-block;
+        }
+
+        /* Modern Custom Select (Android Ripple Click Style) */
+        .md-select-trigger {
+            background: #f0f4f9;
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+        }
+        .md-select-trigger:active { background: #e1e7f0; }
+        .select-val-name { font-weight: 600; font-size: 1rem; color: var(--md-sys-color-on-surface); }
+        .select-val-sub { font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); }
+
+        /* Status Selection Pills */
+        .status-container {
+            display: flex;
+            gap: 12px;
+        }
+        .status-pill {
+            flex: 1;
+            padding: 14px;
+            border-radius: 16px;
+            border: 2px solid #e0e0e0;
+            background: transparent;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .status-pill.active-masuk { background: #e8f0fe; border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); }
+        .status-pill.active-pulang { background: #fce8e6; border-color: var(--md-sys-color-error); color: var(--md-sys-color-error); }
+
+        /* Camera Frame Vertical */
+        .camera-card {
+            background: #000;
+            border-radius: 24px;
+            overflow: hidden;
+            aspect-ratio: 3 / 4;
+            position: relative;
+        }
+        #camera-stream, #photo-captured { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+        #photo-captured { display: none; transform: none; }
+
+        /* Android M3 Filled & Tonal Buttons */
+        .btn-m3 {
+            padding: 16px;
+            border-radius: 100px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+        .btn-m3-filled { background: var(--md-sys-color-primary); color: white; }
+        .btn-m3-filled:active { background: #0052c4; }
+        .btn-m3-tonal { background: #dfe2eb; color: #1d1b20; }
+        .btn-m3-tonal:active { background: #d0d3dc; }
+        .btn-m3-success { background: var(--md-sys-color-success); color: white; width: 100%; margin-top: 10px; }
+
+        /* BOTTOM SHEET (Android Modern Selection Component) */
+        .bottom-sheet-overlay {
+            position: absolute;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 200;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .bottom-sheet-overlay.open { opacity: 1; pointer-events: auto; }
+        
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%;
+            background: var(--md-sys-color-surface-container);
+            border-radius: 28px 28px 0 0;
+            padding: 24px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.05, 0.7, 0.1, 1);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .bottom-sheet-overlay.open .bottom-sheet { transform: translateY(0); }
+        .sheet-handle {
+            width: 40px; height: 4px; background: #ccc; border-radius: 2px; margin: 0 auto 20px;
+        }
+        .sheet-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; }
+        
+        .pegawai-item-card {
+            padding: 16px;
+            border-radius: 16px;
+            background: #f0f4f9;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .pegawai-item-card:active { background: #e1e7f0; }
+        .pegawai-item-name { font-weight: 600; font-size: 1rem; }
+        .pegawai-item-jabatan { font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); }
+
+        /* MODERN ANDROID TOAST NOTIFICATION */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #313033;
+            color: #f4eff4;
+            padding: 14px 24px;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 300;
+            pointer-events: none;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            white-space: nowrap;
+        }
+        .toast-container.show { transform: translateX(-50%) translateY(0); }
+        .toast-success { background: #e8f0fe; color: var(--md-sys-color-primary); }
+        .toast-error { background: #fce8e6; color: var(--md-sys-color-error); }
+
+        /* History List */
+        .history-box { border-top: 1px solid #e0e0e0; padding-top: 20px; }
+        .history-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; background: #f8f9ff; border-radius: 12px; margin-bottom: 8px;
+        }
+        .badge-m3 { padding: 4px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+    <!-- MODERN TOAST NOTIFICATION BOX -->
+    <div id="android-toast" class="toast-container">Notifikasi</div>
+
+    <!-- SCREEN 1: LOGIN -->
+    <div id="screen-login" class="screen-login">
+        <div class="login-header">
+            <div class="login-logo-container">
+                <img src="https://via.placeholder.com/60" alt="Logo Utama" style="border-radius:50%">
+                <img src="https://via.placeholder.com/40" alt="Logo Kedua" style="object-fit:contain">
+            </div>
+            <h2 style="font-weight:700; margin-bottom:8px;">Sistem Absensi Desa</h2>
+            <p style="color:var(--md-sys-color-on-surface-variant); font-size:0.9rem;">Silahkan masukkan akses masuk sistem</p>
+        </div>
+        
+        <div class="md-text-field">
+            <input type="password" id="login-pass" placeholder="Kata Sandi Akses">
+        </div>
+
+        <button class="btn-m3 btn-m3-filled" onclick="handleLogin()">Masuk Aplikasi</button>
+    </div>
+
+    <!-- SCREEN 2: MAIN APP -->
+    <div id="screen-main" class="screen-main">
+        
+        <!-- App Header Components -->
+        <div class="app-header">
+            <img src="https://via.placeholder.com/56" alt="Logo Utama" class="main-logo">
+            <div style="flex:1">
+                <div class="header-title-text">Desa Tanjung Nyiur</div>
+            </div>
+            <img src="https://via.placeholder.com/36" alt="Logo Kedua" class="second-logo">
+        </div>
+
+        <!-- Realtime Digital Clock -->
+        <div class="clock-card">
+            <div class="clock-date" id="current-date">Memuat tanggal...</div>
+            <div class="clock-time" id="current-time">00:00:00</div>
+            <div class="clock-rule">Batas Masuk: 08:00 • Batas Terlambat: 08:15</div>
+        </div>
+
+        <!-- Android Modern Custom Employee Select Component -->
+        <div>
+            <label style="font-size:0.85rem; font-weight:700; display:block; margin-bottom:8px; color:var(--md-sys-color-primary)">PERANGKAT DESA</label>
+            <div class="md-select-trigger" onclick="openBottomSheet()">
+                <div>
+                    <div class="select-val-name" id="selected-name">Pilih Nama Pegawai</div>
+                    <div class="select-val-sub" id="selected-jabatan">Ketuk untuk memilih jabatan</div>
+                </div>
+                <span style="font-size:1.2rem; color:gray;">▼</span>
+            </div>
+        </div>
+
+        <!-- Status Toggle Pills -->
+        <div class="status-container">
+            <button class="status-pill active-masuk" id="pill-masuk" onclick="setStatus('Masuk')">Jam Masuk</button>
+            <button class="status-pill" id="pill-pulang" onclick="setStatus('Pulang')">Jam Pulang</button>
+        </div>
+        <input type="hidden" id="status-val" value="Masuk">
+
+        <!-- Camera Interface Vertical Area -->
+        <div>
+            <label style="font-size:0.85rem; font-weight:700; display:block; margin-bottom:8px;">KAMERA VERIFIKASI</label>
+            <div class="camera-card">
+                <video id="camera-stream" autoplay playsinline></video>
+                <img id="photo-captured" alt="Hasil Foto">
+                <canvas id="canvas" style="display:none;"></canvas>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button class="btn-m3 btn-m3-filled" id="btn-snap" style="flex:1" onclick="capturePhoto()">Ambil Foto</button>
+                <button class="btn-m3 btn-m3-tonal" id="btn-retake" style="flex:1; display:none;" onclick="retakePhoto()">Ambil Ulang</button>
+            </div>
+        </div>
+
+        <!-- Submit Process Container -->
+        <button class="btn-m3 btn-m3-filled btn-m3-success" onclick="processSubmit()">Kirim Data ke Google Sheets</button>
+
+        <!-- Log Attendance History Local View -->
+        <div class="history-box">
+            <h4 style="font-size:0.95rem; margin-bottom:12px;">Riwayat Kehadiran Perangkat</h4>
+            <div id="history-render-area">
+                <!-- Node insertion area -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM SHEET SELECTION INTERFACE -->
+    <div id="bottom-sheet-overlay" class="bottom-sheet-overlay" onclick="closeBottomSheet()">
+        <div class="bottom-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <div class="sheet-title">Pilih Perangkat Desa</div>
+            
+            <!-- Employee Selection List Options container -->
+            <div class="pegawai-item-card" onclick="selectEmployee('Budi Santoso', 'Kepala Desa')">
+                <div class="pegawai-item-name">Budi Santoso</div>
+                <div class="pegawai-item-jabatan">Kepala Desa</div>
+            </div>
+            <div class="pegawai-item-card" onclick="selectEmployee('Siti Aminah', 'Sekretaris Desa')">
+                <div class="pegawai-item-name">Siti Aminah</div>
+                <div class="pegawai-item-jabatan">Sekretaris Desa</div>
+            </div>
+            <div class="pegawai-item-card" onclick="selectEmployee('Ahmad Fauzi', 'Kaur Keuangan')">
+                <div class="pegawai-item-name">Ahmad Fauzi</div>
+                <div class="pegawai-item-jabatan">Kaur Keuangan</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let globalPhotoData = null;
+    let selectedEmployeeName = "";
+
+    // 1. Android Modern Toast Custom Engine
+    function showAndroidToast(message, type = 'info') {
+        const toast = document.getElementById('android-toast');
+        toast.innerText = message;
+        toast.className = "toast-container show";
+        
+        if(type === 'success') toast.classList.add('toast-success');
+        if(type === 'error') toast.classList.add('toast-error');
+
+        setTimeout(() => {
+            toast.classList.remove('show', 'toast-success', 'toast-error');
+        }, 3000);
+    }
+
+    // 2. Authentication Login Handling
+    function handleLogin() {
+        const passwordInput = document.getElementById('login-pass').value;
+        
+        // Atur password default aplikasi disini (misal: "admin")
+        if (passwordInput === "admin" || passwordInput === "123") {
+            document.getElementById('screen-login').classList.add('hidden');
+            document.getElementById('screen-main').classList.add('active');
+            showAndroidToast("Login Berhasil! Selamat Bekerja.", "success");
+            initCamera();
+        } else {
+            showAndroidToast("Akses Ditolak! Sandi salah.", "error");
+        }
+    }
+
+    // 3. Android System Clock Engine
+    function startClockSystem() {
+        const renderTime = () => {
+            const now = new Date();
+            document.getElementById('current-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('current-time').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+        }
+        setInterval(renderTime, 1000);
+        renderTime();
+    }
+    startClockSystem();
+
+    // 4. Bottom Sheet Dynamic Controllers
+    function openBottomSheet() {
+        document.getElementById('bottom-sheet-overlay').classList.add('open');
+    }
+    function closeBottomSheet() {
+        document.getElementById('bottom-sheet-overlay').classList.remove('open');
+    }
+    function selectEmployee(name, jabatan) {
+        selectedEmployeeName = name;
+        document.getElementById('selected-name').innerText = name;
+        document.getElementById('selected-jabatan').innerText = jabatan;
+        closeBottomSheet();
+        showAndroidToast(`Pegawai: ${name} terpilih`);
+    }
+
+    // 5. Shift Status Management
+    function setStatus(type) {
+        document.getElementById('status-val').value = type;
+        const pMasuk = document.getElementById('pill-masuk');
+        const pPulang = document.getElementById('pill-pulang');
+        
+        if (type === 'Masuk') {
+            pMasuk.classList.add('active-masuk');
+            pPulang.classList.remove('active-pulang');
+            showAndroidToast("Mode Absen: Jam Masuk Kerja");
+        } else {
+            pPulang.classList.add('active-pulang');
+            pMasuk.classList.remove('active-masuk');
+            showAndroidToast("Mode Absen: Jam Pulang Kerja");
+        }
+    }
+
+    // 6. Camera Constraints and Handlers
+    const videoObj = document.getElementById('camera-stream');
+    const previewObj = document.getElementById('photo-captured');
+    const canvasObj = document.getElementById('canvas');
+
+    async function initCamera() {
+        try {
+            const streamData = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "user", aspectRatio: 3/4 }
+            });
+            videoObj.srcObject = streamData;
+        } catch (err) {
+            showAndroidToast("Gagal memuat sistem kamera device", "error");
+        }
+    }
+
+    function capturePhoto() {
+        canvasObj.width = videoObj.videoWidth;
+        canvasObj.height = videoObj.videoHeight;
+        const ctx = canvasObj.getContext('2d');
+        
+        ctx.translate(canvasObj.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(videoObj, 0, 0, canvasObj.width, canvasObj.height);
+        
+        globalPhotoData = canvasObj.toDataURL('image/jpeg', 0.85);
+        previewObj.src = globalPhotoData;
+        
+        videoObj.style.display = 'none';
+        previewObj.style.display = 'block';
+        document.getElementById('btn-snap').style.display = 'none';
+        document.getElementById('btn-retake').style.display = 'block';
+        
+        showAndroidToast("Foto berhasil diambil", "success");
+    }
+
+    function retakePhoto() {
+        globalPhotoData = null;
+        previewObj.style.display = 'none';
+        videoObj.style.display = 'block';
+        document.getElementById('btn-retake').style.display = 'none';
+        document.getElementById('btn-snap').style.display = 'block';
+        showAndroidToast("Kamera siap mengambil ulang foto");
+    }
+
+    // 7. Core submission logic
+    function processSubmit() {
+        const statusAbsen = document.getElementById('status-val').value;
+        const waktuKirim = document.getElementById('current-time').innerText;
+
+        if (!selectedEmployeeName) {
+            showAndroidToast("Peringatan: Pegawai belum dipilih!", "error");
+            return;
+        }
+        if (!globalPhotoData) {
+            showAndroidToast("Peringatan: Ambil foto verifikasi!", "error");
+            return;
+        }
+
+        showAndroidToast("Sedang menyinkronkan data ke Sheets...", "info");
+
+        // Proses Simulasi ke Google Sheets Backend
+        setTimeout(() => {
+            showAndroidToast("Data Absensi Sukses Terkirim!", "success");
+
+            // Update UI list history secara lokal
+            const historyContainer = document.getElementById('history-render-area');
+            const itemElement = document.createElement('div');
+            itemElement.className = 'history-item';
+            
+            const badgeBg = statusAbsen === 'Masuk' ? 'background:var(--md-sys-color-primary)' : 'background:var(--md-sys-color-error)';
+            
+            itemElement.innerHTML = `
+                <div>
+                    <div style="font-weight:600;">${selectedEmployeeName}</div>
+                    <div style="font-size:0.75rem; color:gray;">Waktu: ${waktuKirim}</div>
+                </div>
+                <span class="badge-m3" style="${badgeBg}">${statusAbsen}</span>
+            `;
+            historyContainer.prepend(itemElement);
+
+            // Reset Form Parameters pasca submit sukses
+            retakePhoto();
+            selectedEmployeeName = "";
+            document.getElementById('selected-name').innerText = "Pilih Nama Pegawai";
+            document.getElementById('selected-jabatan').innerText = "Ketuk untuk memilih jabatan";
+        }, 1500);
+    }
+</script>
+</body>
+</html>
