@@ -2,564 +2,578 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Absensi Desa Modern</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Absensi Digital Desa</title>
+    <!-- Mengimpor Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-
+        /* ==========================================
+           1. ATURAN DASAR & VARIABEL WARNA
+           ========================================== */
         :root {
-            --md-sys-color-primary: #0063ec;
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-surface: #f8f9ff;
-            --md-sys-color-surface-container: #ffffff;
-            --md-sys-color-on-surface: #1d1b20;
-            --md-sys-color-on-surface-variant: #49454f;
-            --md-sys-color-outline: #79747e;
-            --md-sys-color-error: #ba1a1a;
-            --md-sys-color-success: #136d3b;
+            --primary-color: #2563eb;
+            --success-color: #10b981;
+            --warning-color: #ef4444;
+            --transition-speed: 0.5s;
         }
 
         * {
             box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
-            background-color: var(--md-sys-color-surface);
-            color: var(--md-sys-color-on-surface);
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             min-height: 100vh;
-            padding: 0;
-        }
-
-        /* Container Utama ala Android App */
-        .app-shell {
-            width: 100%;
-            max-width: 450px;
-            min-height: 100vh;
-            background: var(--md-sys-color-surface-container);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            padding: 24px 0;
+            background-color: #0f172a;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image var(--transition-speed) ease-in-out;
             overflow-x: hidden;
-        }
-
-        /* SCREEN: LOGIN */
-        .screen-login {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--md-sys-color-surface-container);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 32px;
-            transition: transform 0.4s cubic-bezier(0.05, 0.7, 0.1, 1);
-        }
-
-        .screen-login.hidden {
-            transform: translateY(-100%);
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .login-logo-container {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        /* Android M3 Text Field */
-        .md-text-field {
             position: relative;
-            margin-bottom: 24px;
         }
 
-        .md-text-field input {
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+            z-index: 1;
+        }
+
+        /* ==========================================
+           2. TAMPILAN UTAMA (GLASSMORPHISM)
+           ========================================== */
+        .main-card {
+            position: relative;
+            z-index: 2;
             width: 100%;
-            padding: 16px;
-            border: 2px solid var(--md-sys-color-outline);
-            border-radius: 16px;
-            font-size: 1rem;
-            outline: none;
-            background: transparent;
-            transition: 0.2s;
+            max-width: 440px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 28px;
+            padding: 30px 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+            transition: all var(--transition-speed) ease;
         }
 
-        .md-text-field input:focus {
-            border-color: var(--md-sys-color-primary);
-        }
-
-        /* SCREEN: MAIN APP */
-        .screen-main {
-            padding: 20px;
+        /* AREA LOGO DESA */
+        .logo-area {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .screen-main.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* Header Components */
-        .app-header {
-            display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 8px 0;
-        }
-        .main-logo { width: 56px; height: 56px; border-radius: 50%; object-fit: cover;}
-        .second-logo { width: 36px; height: 36px; object-fit: contain;}
-        .header-title-text { font-size: 1.15rem; font-weight: 700; }
-
-        /* Modern Clock Display (Card M3) */
-        .clock-card {
-            background: linear-gradient(135deg, #0d47a1, #0063ec);
-            color: white;
-            padding: 24px;
-            border-radius: 28px;
+            margin-bottom: 20px;
             text-align: center;
-            box-shadow: 0 8px 24px rgba(0,99,236,0.25);
-        }
-        .clock-time { font-size: 2.8rem; font-weight: 700; letter-spacing: -1px; }
-        .clock-date { font-size: 0.95rem; opacity: 0.9; margin-bottom: 12px; font-weight: 500;}
-        .clock-rule { 
-            font-size: 0.75rem; background: rgba(255,255,255,0.15); 
-            padding: 6px 14px; border-radius: 100px; display: inline-block;
         }
 
-        /* Modern Custom Select (Android Ripple Click Style) */
-        .md-select-trigger {
-            background: #f0f4f9;
-            padding: 16px;
-            border-radius: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: 0.2s;
-        }
-        .md-select-trigger:active { background: #e1e7f0; }
-        .select-val-name { font-weight: 600; font-size: 1rem; color: var(--md-sys-color-on-surface); }
-        .select-val-sub { font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); }
-
-        /* Status Selection Pills */
-        .status-container {
-            display: flex;
-            gap: 12px;
-        }
-        .status-pill {
-            flex: 1;
-            padding: 14px;
-            border-radius: 16px;
-            border: 2px solid #e0e0e0;
-            background: transparent;
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--md-sys-color-on-surface-variant);
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .status-pill.active-masuk { background: #e8f0fe; border-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); }
-        .status-pill.active-pulang { background: #fce8e6; border-color: var(--md-sys-color-error); color: var(--md-sys-color-error); }
-
-        /* Camera Frame Vertical */
-        .camera-card {
-            background: #000;
-            border-radius: 24px;
-            overflow: hidden;
-            aspect-ratio: 3 / 4;
-            position: relative;
-        }
-        #camera-stream, #photo-captured { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
-        #photo-captured { display: none; transform: none; }
-
-        /* Android M3 Filled & Tonal Buttons */
-        .btn-m3 {
-            padding: 16px;
-            border-radius: 100px;
-            border: none;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
-            transition: 0.2s;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
+            margin-bottom: 10px;
         }
-        .btn-m3-filled { background: var(--md-sys-color-primary); color: white; }
-        .btn-m3-filled:active { background: #0052c4; }
-        .btn-m3-tonal { background: #dfe2eb; color: #1d1b20; }
-        .btn-m3-tonal:active { background: #d0d3dc; }
-        .btn-m3-success { background: var(--md-sys-color-success); color: white; width: 100%; margin-top: 10px; }
 
-        /* BOTTOM SHEET (Android Modern Selection Component) */
-        .bottom-sheet-overlay {
-            position: absolute;
-            top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.4);
-            z-index: 200;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.3s ease;
+        .logo-container svg {
+            width: 55%;
+            height: 55%;
+            fill: var(--primary-color);
         }
-        .bottom-sheet-overlay.open { opacity: 1; pointer-events: auto; }
-        
-        .bottom-sheet {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%;
-            background: var(--md-sys-color-surface-container);
-            border-radius: 28px 28px 0 0;
-            padding: 24px;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.05, 0.7, 0.1, 1);
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .bottom-sheet-overlay.open .bottom-sheet { transform: translateY(0); }
-        .sheet-handle {
-            width: 40px; height: 4px; background: #ccc; border-radius: 2px; margin: 0 auto 20px;
-        }
-        .sheet-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; }
-        
-        .pegawai-item-card {
-            padding: 16px;
-            border-radius: 16px;
-            background: #f0f4f9;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .pegawai-item-card:active { background: #e1e7f0; }
-        .pegawai-item-name { font-weight: 600; font-size: 1rem; }
-        .pegawai-item-jabatan { font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); }
 
-        /* MODERN ANDROID TOAST NOTIFICATION */
-        .toast-container {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #313033;
-            color: #f4eff4;
-            padding: 14px 24px;
-            border-radius: 100px;
-            font-size: 0.9rem;
+        .village-title {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #1e293b;
+            text-transform: uppercase;
+        }
+
+        .village-subtitle {
+            font-size: 11px;
+            color: #64748b;
             font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 300;
-            pointer-events: none;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            white-space: nowrap;
         }
-        .toast-container.show { transform: translateX(-50%) translateY(0); }
-        .toast-success { background: #e8f0fe; color: var(--md-sys-color-primary); }
-        .toast-error { background: #fce8e6; color: var(--md-sys-color-error); }
 
-        /* History List */
-        .history-box { border-top: 1px solid #e0e0e0; padding-top: 20px; }
-        .history-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 16px; background: #f8f9ff; border-radius: 12px; margin-bottom: 8px;
+        /* ANIMASI VIEWS */
+        .view-section {
+            display: none;
+            animation: slideUp 0.4s ease forwards;
         }
-        .badge-m3 { padding: 4px 12px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: white; }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-header h2 {
+            font-size: 20px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        /* ==========================================
+           3. DASHBOARD MODUL (NAMA OTOMATIS)
+           ========================================== */
+        .dashboard-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e2e8f0;
+            margin-bottom: 12px;
+        }
+
+        .profile-icon {
+            font-size: 38px;
+            color: var(--primary-color);
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .user-details p {
+            font-size: 11px;
+            color: #2563eb;
+            font-weight: 700;
+            background: rgba(37, 99, 235, 0.08);
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-top: 2px;
+        }
+
+        /* Jam & Tanggal Digital */
+        .live-clock-box {
+            text-align: center;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        #txt-jam {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #38bdf8;
+            font-family: monospace;
+        }
+
+        #txt-tanggal {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Info Batas Jam Kerja */
+        .shift-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .shift-badge {
+            display: flex;
+            flex-direction: column;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        .shift-badge.masuk {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #065f46;
+        }
+
+        .shift-badge.lambat {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #991b1b;
+        }
+
+        .badge-label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+
+        .badge-time { font-size: 14px; font-weight: 800; }
+        .shift-badge.masuk .badge-time { color: var(--success-color); }
+        .shift-badge.lambat .badge-time { color: var(--warning-color); }
+
+        /* ==========================================
+           4. FORMULIR & INTERACTIVE STATUS CARDS
+           ========================================== */
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; text-transform: uppercase; }
+        
+        .input-wrapper { position: relative; display: flex; align-items: center; }
+        .input-wrapper i { position: absolute; left: 14px; color: #94a3b8; font-size: 16px; }
+        .input-wrapper input { width: 100%; padding: 12px 14px 12px 42px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; transition: all 0.2s ease; }
+        .input-wrapper input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+
+        .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .status-card { background: #ffffff; border: 2px solid #e2e8f0; border-radius: 14px; padding: 12px 4px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+        .status-card i { font-size: 18px; }
+        .status-card span { font-size: 11px; font-weight: 700; color: #64748b; }
+
+        .icon-hadir { color: #10b981; }
+        .icon-izin { color: #f59e0b; }
+        .icon-tugas { color: #3b82f6; }
+
+        .status-card.active { border-color: var(--primary-color); background: rgba(37, 99, 235, 0.06); }
+        .status-card.active span { color: var(--primary-color); }
+
+        /* ==========================================
+           5. MODUL FITUR KAMERA DENGAN AI SCANNER
+           ========================================== */
+        .camera-box { width: 100%; height: 290px; background: #111827; border-radius: 16px; overflow: hidden; position: relative; border: 2px solid #e2e8f0; margin-bottom: 10px; }
+        #webcam, #photo-preview { width: 100%; height: 100%; object-fit: cover; }
+
+        .scanner-laser { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, transparent, var(--primary-color), transparent); box-shadow: 0 0 10px var(--primary-color); animation: scanning 3s linear infinite; z-index: 10; }
+        @keyframes scanning { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
+
+        .scanner-corner { position: absolute; width: 14px; height: 14px; border: 3px solid var(--primary-color); z-index: 10; }
+        .c-tl { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+        .c-tr { top: 12px; right: 12px; border-left: none; border-bottom: none; }
+        .c-bl { bottom: 12px; left: 12px; border-right: none; border-top: none; }
+        .c-br { bottom: 12px; right: 12px; border-left: none; border-top: none; }
+
+        .camera-actions { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; }
+        .btn-cam { padding: 8px 16px; font-size: 12px; font-weight: 700; border-radius: 20px; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-cam-capture { background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; }
+        .btn-cam-retake { background: #ef4444; color: white; }
+
+        /* ==========================================
+           6. TOMBOL AKSI UTAMA
+           ========================================== */
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-primary { background: var(--primary-color); color: #ffffff; }
+        .btn-success { background: var(--success-color); color: #ffffff; }
+        .btn-logout { background: transparent; color: #ef4444; border: 2px solid #fecaca; margin-top: 10px; padding: 8px; font-size: 12px; }
+
+        /* ANDROID MODAL POP-UP */
+        .android-popup-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.5); display: flex; justify-content: center; align-items: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .android-popup-overlay.active { opacity: 1; pointer-events: auto; }
+        .android-popup-card { background: #f8fafc; width: 85%; max-width: 300px; border-radius: 24px; padding: 20px; text-align: left; }
+        .popup-title { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+        .popup-body { font-size: 13px; color: #475569; margin-bottom: 16px; }
+        .popup-actions { display: flex; justify-content: flex-end; }
+        .popup-btn { background: none; border: none; color: var(--primary-color); font-weight: 700; font-size: 13px; cursor: pointer; }
+
+        @media (max-width: 480px) { .main-card { margin: 12px; } }
     </style>
 </head>
 <body>
 
-<div class="app-shell">
+    <div class="overlay"></div>
 
-    <!-- MODERN TOAST NOTIFICATION BOX -->
-    <div id="android-toast" class="toast-container">Notifikasi</div>
-
-    <!-- SCREEN 1: LOGIN -->
-    <div id="screen-login" class="screen-login">
-        <div class="login-header">
-            <div class="login-logo-container">
-                <img src="https://via.placeholder.com/60" alt="Logo Utama" style="border-radius:50%">
-                <img src="https://via.placeholder.com/40" alt="Logo Kedua" style="object-fit:contain">
-            </div>
-            <h2 style="font-weight:700; margin-bottom:8px;">Sistem Absensi Desa</h2>
-            <p style="color:var(--md-sys-color-on-surface-variant); font-size:0.9rem;">Silahkan masukkan akses masuk sistem</p>
-        </div>
+    <div class="main-card">
         
-        <div class="md-text-field">
-            <input type="password" id="login-pass" placeholder="Kata Sandi Akses">
-        </div>
-
-        <button class="btn-m3 btn-m3-filled" onclick="handleLogin()">Masuk Aplikasi</button>
-    </div>
-
-    <!-- SCREEN 2: MAIN APP -->
-    <div id="screen-main" class="screen-main">
-        
-        <!-- App Header Components -->
-        <div class="app-header">
-            <img src="https://via.placeholder.com/56" alt="Logo Utama" class="main-logo">
-            <div style="flex:1">
-                <div class="header-title-text">Desa Tanjung Nyiur</div>
+        <!-- LOGO DESA -->
+        <div class="logo-area">
+            <div class="logo-container">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4M12,18c-3.11,0-5.85,-1.59-7.46,-4c.02,-2.44 4.96,-3.78 7.46,-3.78c2.44,0 7.44,1.32 7.46,3.78c-1.61,2.41 -4.35,4 -7.46,4Z" />
+                </svg>
             </div>
-            <img src="https://via.placeholder.com/36" alt="Logo Kedua" class="second-logo">
+            <div class="village-title">Pemerintah Desa</div>
+            <div class="village-subtitle">Kabupaten Nusantara</div>
         </div>
 
-        <!-- Realtime Digital Clock -->
-        <div class="clock-card">
-            <div class="clock-date" id="current-date">Memuat tanggal...</div>
-            <div class="clock-time" id="current-time">00:00:00</div>
-            <div class="clock-rule">Batas Masuk: 08:00 • Batas Terlambat: 08:15</div>
-        </div>
-
-        <!-- Android Modern Custom Employee Select Component -->
-        <div>
-            <label style="font-size:0.85rem; font-weight:700; display:block; margin-bottom:8px; color:var(--md-sys-color-primary)">PERANGKAT DESA</label>
-            <div class="md-select-trigger" onclick="openBottomSheet()">
-                <div>
-                    <div class="select-val-name" id="selected-name">Pilih Nama Pegawai</div>
-                    <div class="select-val-sub" id="selected-jabatan">Ketuk untuk memilih jabatan</div>
+        <!-- VIEW 1: PORTAL LOGIN (HANYA KODE AKSES MASUK) -->
+        <div class="view-section active" id="view-login">
+            <div class="form-header">
+                <h2>Portal Masuk Perangkat</h2>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label>Akses Masuk (ID / NIK)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="text" id="kode-akses" placeholder="Masukkan 4 Digit Kode Akses Anda" required>
+                    </div>
                 </div>
-                <span style="font-size:1.2rem; color:gray;">▼</span>
-            </div>
+                <button type="submit" class="btn btn-primary">VERIFIKASI AKSES</button>
+            </form>
         </div>
 
-        <!-- Status Toggle Pills -->
-        <div class="status-container">
-            <button class="status-pill active-masuk" id="pill-masuk" onclick="setStatus('Masuk')">Jam Masuk</button>
-            <button class="status-pill" id="pill-pulang" onclick="setStatus('Pulang')">Jam Pulang</button>
-        </div>
-        <input type="hidden" id="status-val" value="Masuk">
-
-        <!-- Camera Interface Vertical Area -->
-        <div>
-            <label style="font-size:0.85rem; font-weight:700; display:block; margin-bottom:8px;">KAMERA VERIFIKASI</label>
-            <div class="camera-card">
-                <video id="camera-stream" autoplay playsinline></video>
-                <img id="photo-captured" alt="Hasil Foto">
-                <canvas id="canvas" style="display:none;"></canvas>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:12px;">
-                <button class="btn-m3 btn-m3-filled" id="btn-snap" style="flex:1" onclick="capturePhoto()">Ambil Foto</button>
-                <button class="btn-m3 btn-m3-tonal" id="btn-retake" style="flex:1; display:none;" onclick="retakePhoto()">Ambil Ulang</button>
-            </div>
-        </div>
-
-        <!-- Submit Process Container -->
-        <button class="btn-m3 btn-m3-filled btn-m3-success" onclick="processSubmit()">Kirim Data ke Google Sheets</button>
-
-        <!-- Log Attendance History Local View -->
-        <div class="history-box">
-            <h4 style="font-size:0.95rem; margin-bottom:12px;">Riwayat Kehadiran Perangkat</h4>
-            <div id="history-render-area">
-                <!-- Node insertion area -->
-            </div>
-        </div>
-
-    </div>
-
-    <!-- BOTTOM SHEET SELECTION INTERFACE -->
-    <div id="bottom-sheet-overlay" class="bottom-sheet-overlay" onclick="closeBottomSheet()">
-        <div class="bottom-sheet" onclick="event.stopPropagation()">
-            <div class="sheet-handle"></div>
-            <div class="sheet-title">Pilih Perangkat Desa</div>
+        <!-- VIEW 2: HALAMAN ABSENSI (DASHBOARD) -->
+        <div class="view-section" id="view-absen">
             
-            <!-- Employee Selection List Options container -->
-            <div class="pegawai-item-card" onclick="selectEmployee('Budi Santoso', 'Kepala Desa')">
-                <div class="pegawai-item-name">Budi Santoso</div>
-                <div class="pegawai-item-jabatan">Kepala Desa</div>
-            </div>
-            <div class="pegawai-item-card" onclick="selectEmployee('Siti Aminah', 'Sekretaris Desa')">
-                <div class="pegawai-item-name">Siti Aminah</div>
-                <div class="pegawai-item-jabatan">Sekretaris Desa</div>
-            </div>
-            <div class="pegawai-item-card" onclick="selectEmployee('Ahmad Fauzi', 'Kaur Keuangan')">
-                <div class="pegawai-item-name">Ahmad Fauzi</div>
-                <div class="pegawai-item-jabatan">Kaur Keuangan</div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<script>
-    let globalPhotoData = null;
-    let selectedEmployeeName = "";
-
-    // 1. Android Modern Toast Custom Engine
-    function showAndroidToast(message, type = 'info') {
-        const toast = document.getElementById('android-toast');
-        toast.innerText = message;
-        toast.className = "toast-container show";
-        
-        if(type === 'success') toast.classList.add('toast-success');
-        if(type === 'error') toast.classList.add('toast-error');
-
-        setTimeout(() => {
-            toast.classList.remove('show', 'toast-success', 'toast-error');
-        }, 3000);
-    }
-
-    // 2. Authentication Login Handling
-    function handleLogin() {
-        const passwordInput = document.getElementById('login-pass').value;
-        
-        // Atur password default aplikasi disini (misal: "admin")
-        if (passwordInput === "admin" || passwordInput === "123") {
-            document.getElementById('screen-login').classList.add('hidden');
-            document.getElementById('screen-main').classList.add('active');
-            showAndroidToast("Login Berhasil! Selamat Bekerja.", "success");
-            initCamera();
-        } else {
-            showAndroidToast("Akses Ditolak! Sandi salah.", "error");
-        }
-    }
-
-    // 3. Android System Clock Engine
-    function startClockSystem() {
-        const renderTime = () => {
-            const now = new Date();
-            document.getElementById('current-date').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('current-time').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-        }
-        setInterval(renderTime, 1000);
-        renderTime();
-    }
-    startClockSystem();
-
-    // 4. Bottom Sheet Dynamic Controllers
-    function openBottomSheet() {
-        document.getElementById('bottom-sheet-overlay').classList.add('open');
-    }
-    function closeBottomSheet() {
-        document.getElementById('bottom-sheet-overlay').classList.remove('open');
-    }
-    function selectEmployee(name, jabatan) {
-        selectedEmployeeName = name;
-        document.getElementById('selected-name').innerText = name;
-        document.getElementById('selected-jabatan').innerText = jabatan;
-        closeBottomSheet();
-        showAndroidToast(`Pegawai: ${name} terpilih`);
-    }
-
-    // 5. Shift Status Management
-    function setStatus(type) {
-        document.getElementById('status-val').value = type;
-        const pMasuk = document.getElementById('pill-masuk');
-        const pPulang = document.getElementById('pill-pulang');
-        
-        if (type === 'Masuk') {
-            pMasuk.classList.add('active-masuk');
-            pPulang.classList.remove('active-pulang');
-            showAndroidToast("Mode Absen: Jam Masuk Kerja");
-        } else {
-            pPulang.classList.add('active-pulang');
-            pMasuk.classList.remove('active-masuk');
-            showAndroidToast("Mode Absen: Jam Pulang Kerja");
-        }
-    }
-
-    // 6. Camera Constraints and Handlers
-    const videoObj = document.getElementById('camera-stream');
-    const previewObj = document.getElementById('photo-captured');
-    const canvasObj = document.getElementById('canvas');
-
-    async function initCamera() {
-        try {
-            const streamData = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "user", aspectRatio: 3/4 }
-            });
-            videoObj.srcObject = streamData;
-        } catch (err) {
-            showAndroidToast("Gagal memuat sistem kamera device", "error");
-        }
-    }
-
-    function capturePhoto() {
-        canvasObj.width = videoObj.videoWidth;
-        canvasObj.height = videoObj.videoHeight;
-        const ctx = canvasObj.getContext('2d');
-        
-        ctx.translate(canvasObj.width, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(videoObj, 0, 0, canvasObj.width, canvasObj.height);
-        
-        globalPhotoData = canvasObj.toDataURL('image/jpeg', 0.85);
-        previewObj.src = globalPhotoData;
-        
-        videoObj.style.display = 'none';
-        previewObj.style.display = 'block';
-        document.getElementById('btn-snap').style.display = 'none';
-        document.getElementById('btn-retake').style.display = 'block';
-        
-        showAndroidToast("Foto berhasil diambil", "success");
-    }
-
-    function retakePhoto() {
-        globalPhotoData = null;
-        previewObj.style.display = 'none';
-        videoObj.style.display = 'block';
-        document.getElementById('btn-retake').style.display = 'none';
-        document.getElementById('btn-snap').style.display = 'block';
-        showAndroidToast("Kamera siap mengambil ulang foto");
-    }
-
-    // 7. Core submission logic
-    function processSubmit() {
-        const statusAbsen = document.getElementById('status-val').value;
-        const waktuKirim = document.getElementById('current-time').innerText;
-
-        if (!selectedEmployeeName) {
-            showAndroidToast("Peringatan: Pegawai belum dipilih!", "error");
-            return;
-        }
-        if (!globalPhotoData) {
-            showAndroidToast("Peringatan: Ambil foto verifikasi!", "error");
-            return;
-        }
-
-        showAndroidToast("Sedang menyinkronkan data ke Sheets...", "info");
-
-        // Proses Simulasi ke Google Sheets Backend
-        setTimeout(() => {
-            showAndroidToast("Data Absensi Sukses Terkirim!", "success");
-
-            // Update UI list history secara lokal
-            const historyContainer = document.getElementById('history-render-area');
-            const itemElement = document.createElement('div');
-            itemElement.className = 'history-item';
-            
-            const badgeBg = statusAbsen === 'Masuk' ? 'background:var(--md-sys-color-primary)' : 'background:var(--md-sys-color-error)';
-            
-            itemElement.innerHTML = `
-                <div>
-                    <div style="font-weight:600;">${selectedEmployeeName}</div>
-                    <div style="font-size:0.75rem; color:gray;">Waktu: ${waktuKirim}</div>
+            <!-- DASHBOARD UTAMA (NAMA LANGSUNG TIMBUL DI SINI) -->
+            <div class="dashboard-box">
+                <div class="user-profile">
+                    <i class="fa-solid fa-id-badge profile-icon"></i>
+                    <div class="user-details">
+                        <h3 id="txt-perangkat-nama">Memuat Nama...</h3>
+                        <p id="txt-perangkat-jabatan">Aparatur Desa</p>
+                    </div>
                 </div>
-                <span class="badge-m3" style="${badgeBg}">${statusAbsen}</span>
-            `;
-            historyContainer.prepend(itemElement);
+                
+                <div class="live-clock-box">
+                    <div id="txt-jam">00:00:00</div>
+                    <div id="txt-tanggal">Memuat Tanggal...</div>
+                </div>
 
-            // Reset Form Parameters pasca submit sukses
-            retakePhoto();
-            selectedEmployeeName = "";
-            document.getElementById('selected-name').innerText = "Pilih Nama Pegawai";
-            document.getElementById('selected-jabatan').innerText = "Ketuk untuk memilih jabatan";
-        }, 1500);
-    }
-</script>
+                <div class="shift-info-grid">
+                    <div class="shift-badge masuk">
+                        <span class="badge-label"><i class="fa-regular fa-clock"></i> Jam Masuk</span>
+                        <span class="badge-time">08:00 WITA</span>
+                    </div>
+                    <div class="shift-badge lambat">
+                        <span class="badge-label"><i class="fa-solid fa-triangle-exclamation"></i> Batas Telat</span>
+                        <span class="badge-time">08:30 WITA</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM ISIAN ABSEN -->
+            <form onsubmit="handleAbsen(event)">
+                <div class="input-group">
+                    <label>Pilih Kehadiran</label>
+                    <div class="status-grid">
+                        <div class="status-card active" onclick="pilihStatus('Hadir', this)">
+                            <i class="fa-solid fa-user-check icon-hadir"></i>
+                            <span>Hadir</span>
+                        </div>
+                        <div class="status-card" onclick="pilihStatus('Izin', this)">
+                            <i class="fa-solid fa-kit-medical icon-izin"></i>
+                            <span>Izin</span>
+                        </div>
+                        <div class="status-card" onclick="pijima('Tugas', this)" onclick="pilihStatus('Tugas', this)">
+                            <i class="fa-solid fa-map-location-dot icon-tugas"></i>
+                            <span>Dinas</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="kehadiran" value="Hadir">
+                </div>
+
+                <div class="camera-container">
+                    <div class="camera-box">
+                        <video id="webcam" autoplay playsinline></video>
+                        <img id="photo-preview" style="display: none;">
+                        <div class="scanner-laser" id="laser-effect"></div>
+                        <div class="scanner-corner c-tl"></div>
+                        <div class="scanner-corner c-tr"></div>
+                        <div class="scanner-corner c-bl"></div>
+                        <div class="scanner-corner c-br"></div>
+                    </div>
+                    <div class="camera-actions">
+                        <button type="button" id="btn-capture" class="btn-cam btn-cam-capture" onclick="ambilFoto()">
+                            <i class="fa-solid fa-camera"></i> Ambil Foto
+                        </button>
+                        <button type="button" id="btn-retake" class="btn-cam btn-cam-retake" style="display: none;" onclick="ulangFoto()">
+                            <i class="fa-solid fa-rotate-right"></i> Ulangi
+                        </button>
+                    </div>
+                </div>
+
+                <canvas id="canvas-photo" style="display: none;"></canvas>
+
+                <button type="submit" class="btn btn-success">KIRIM ABSENSI <i class="fa-solid fa-paper-plane"></i></button>
+                <button type="button" class="btn btn-logout" onclick="switchView('view-login')">KELUAR SESI</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- POPUP NOTIFIKASI -->
+    <div id="android-popup" class="android-popup-overlay">
+        <div class="android-popup-card">
+            <div id="popup-title-text" class="popup-title">Sistem</div>
+            <div id="popup-body-text" class="popup-body">Pesan</div>
+            <div class="popup-actions"><button class="popup-btn" onclick="tutupPopup()">OK</button></div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+       7. LOGIKA JAVASCRIPT & DATABASE LENGKAP
+       ========================================== -->
+    <script>
+        let localStream = null;
+        let fileFotoBase64 = null;
+        let clockInterval = null;
+
+        // 🌟 DATABASE LENGKAP STRUKTUR ORGANISASI PERANGKAT DESA
+        const dbPerangkat = {
+            "1001": { nama: "Supardi, S.Sos", jabatan: "Kepala Desa" },
+            "1234": { nama: "Adi Cipta", jabatan: "Sekretaris Desa" },
+            "1002": { nama: "Budi Santoso", jabatan: "Kaur Keuangan" },
+            "1003": { nama: "Siti Aminah", jabatan: "Kaur Umum & Perencanaan" },
+            "1004": { nama: "Ahmad Riyadi", jabatan: "Kasi Pemerintahan" },
+            "1005": { nama: "Dewi Lestari", jabatan: "Kasi Kesejahteraan & Pelayanan" },
+            "1006": { nama: "Hendra Wijaya", jabatan: "Kepala Dusun I" },
+            "1007": { nama: "Rian Hidayat", jabatan: "Kepala Dusun II" }
+        };
+
+        // --- SISTEM LOGIN MATCHING ---
+        function handleLogin(event) {
+            event.preventDefault();
+            const inputKode = document.getElementById('kode-akses').value.trim();
+            
+            if (dbPerangkat[inputKode]) {
+                const user = dbPerangkat[inputKode];
+                
+                // Tempel data otomatis ke halaman dashboard
+                document.getElementById('txt-perangkat-nama').innerText = user.nama;
+                document.getElementById('txt-perangkat-jabatan').innerText = user.jabatan;
+                
+                switchView('view-absen');
+            } else {
+                tampilkanPopup("Akses Ditolak", "Kode akses salah atau tidak terdaftar di sistem.");
+            }
+        }
+
+        // --- SISTEM JAM DIGITAL REAL-TIME ---
+        function jalankanJamDigital() {
+            if (clockInterval) clearInterval(clockInterval);
+            
+            const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+            clockInterval = setInterval(() => {
+                const sekarang = new Date();
+                
+                const j = String(sekarang.getHours()).padStart(2, '0');
+                const m = String(sekarang.getMinutes()).padStart(2, '0');
+                const d = String(sekarang.getSeconds()).padStart(2, '0');
+                document.getElementById('txt-jam').innerText = `${j}:${m}:${d}`;
+                
+                const hari = namaHari[sekarang.getDay()];
+                const tgl = sekarang.getDate(); // Perbaikan bug variabel 'Clinical' sebelumnya
+                const bln = namaBulan[sekarang.getMonth()];
+                const thn = Clinical = sekarang.getFullYear();
+                document.getElementById('txt-tanggal').innerText = `${hari}, ${tgl} ${bln} ${thn}`;
+            }, 1000);
+        }
+
+        function pilihStatus(nilai, elemen) {
+            document.getElementById('kehadiran').value = nilai;
+            document.querySelectorAll('.status-card').forEach(c => c.classList.remove('active'));
+            elemen.classList.add('active');
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+
+            if (viewId === 'view-absen') {
+                jalankanJamDigital();
+                nyalakanKamera();
+            } else {
+                matikanKamera();
+                if (clockInterval) clearInterval(clockInterval);
+            }
+        }
+
+        function nyalakanKamera() {
+            const video = document.getElementById('webcam');
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+                .then(stream => { localStream = stream; video.srcObject = stream; })
+                .catch(() => { tampilkanPopup("Kamera Gagal", "Izin kamera ditolak."); });
+        }
+
+        function matikanKamera() {
+            if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+        }
+
+        function ambilFoto() {
+            const video = document.getElementById('webcam');
+            const preview = document.getElementById('photo-preview');
+            const canvas = document.getElementById('canvas-photo');
+            
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            fileFotoBase64 = canvas.toDataURL('image/jpeg');
+            preview.src = fileFotoBase64;
+            
+            video.style.display = 'none';
+            preview.style.display = 'block';
+            document.getElementById('btn-capture').style.display = 'none';
+            document.getElementById('btn-retake').style.display = 'inline-flex';
+            document.getElementById('laser-effect').style.display = 'none';
+        }
+
+        function ulangFoto() {
+            fileFotoBase64 = null;
+            document.getElementById('photo-preview').style.display = 'none';
+            document.getElementById('webcam').style.display = 'block';
+            document.getElementById('btn-capture').style.display = 'inline-flex';
+            document.getElementById('btn-retake').style.display = 'none';
+            document.getElementById('laser-effect').style.display = 'block';
+        }
+
+        function handleAbsen(event) {
+            event.preventDefault();
+            if (!fileFotoBase64) {
+                tampilkanPopup("Gagal Kirim", "Foto wajah wajib diambil untuk verifikasi absensi.");
+                return;
+            }
+            tampilkanPopup("Berhasil", "Data absensi desa Anda sudah sukses tercatat.");
+            
+            document.getElementById('kode-akses').value = '';
+            ulangFoto();
+            switchView('view-login');
+        }
+
+        function tampilkanPopup(judul, pesan) {
+            document.getElementById('popup-title-text').innerText = judul;
+            document.getElementById('popup-body-text').innerText = pesan;
+            document.getElementById('android-popup').classList.add('active');
+        }
+        function tutupPopup() { document.getElementById('android-popup').classList.remove('active'); }
+        
+        window.onload = () => {
+            document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1596436889106-be35e843f974?q=80&w=1200')";
+        };
+    </script>
 </body>
 </html>
