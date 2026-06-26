@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Absensi Digital Desa</title>
-    <!-- Mengimpor Google Fonts & Font Awesome Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -78,39 +77,27 @@
         }
 
         .logo-container {
-    width: 95px;                  /* Ukuran lingkaran logo */
-    height: 95px;                 /* Ukuran lingkaran logo */
-    border-radius: 50%;           /* Memaksa wadah ini berbentuk BULAT SEMPURNA */
-    border: 3px solid var(--primary-color); /* Garis tepi lingkaran */
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
-    
-    /* 🌟 DI SINI: Foto yang ingin Anda jadikan latar belakang lingkaran */
-    background-image: url('pemandangan.jpg'); 
-    background-size: cover;       /* Memastikan foto memenuhi seluruh lingkaran */
-    background-position: center;  /* Memastikan foto pas di tengah lingkaran */
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;             /* Memotong apa saja yang keluar dari lingkaran */
-    margin-bottom: 10px;
-}
+            width: 95px;                  
+            height: 95px;                 
+            border-radius: 50%;           
+            border: 3px solid var(--primary-color); 
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+            background-image: url('pemandangan.jpg'); 
+            background-size: cover;       
+            background-position: center;  
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;             
+            margin-bottom: 10px;
+        }
 
-.logo-container img {
-    width: 85%;                   /* Mengatur ukuran logo di dalam agar tidak mentok ke garis lingkaran */
-    height: 85%;
-    object-fit: contain;          /* Menjaga logo Anda tetap proporsional (tidak gepeng) */
-    background: transparent;      /* Memastikan tidak ada warna putih bawaan dari file gambarnya */
-}
-
-
-.logo-container img {
-    height: 100%;
-    width: auto;
-    object-fit: contain;
-}
-
-
+        .logo-container img {
+            width: 85%;                   
+            height: 85%;
+            object-fit: contain;          
+            background: transparent;      
+        }
 
         .village-title {
             font-size: 13px;
@@ -289,12 +276,12 @@
            ========================================== */
         .camera-box { width: 100%; height: 400px; background: #111827; border-radius: 16px; overflow: hidden; position: relative; border: 2px solid #e2e8f0; margin-bottom: 10px; }
         #webcam, #photo-preview { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    transform: scaleX(-1);         /* 🌟 Membuat kamera jadi seperti cermin */
-    -webkit-transform: scaleX(-1); /* Dukungan untuk browser HP */
-}
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            transform: scaleX(-1);         
+            -webkit-transform: scaleX(-1); 
+        }
 
         .scanner-laser { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, transparent, var(--primary-color), transparent); box-shadow: 0 0 10px var(--primary-color); animation: scanning 3s linear infinite; z-index: 10; }
         @keyframes scanning { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
@@ -336,19 +323,15 @@
 
     <div class="main-card">
         
-        <!-- LOGO DESA -->
-<div class="logo-area">
-    <div class="logo-container">
-        <!-- 🌟 Ganti nama_file.png sesuai dengan nama file logo Anda -->
-        <img src="potoku.png" alt="Logo Desa">
-    </div>
-    <div class="village-title">ABSENSI DESA</div>
-    <div class="village-title">Pemerintah Desa Tanjung Nyiir</div>
-
+        <div class="logo-area">
+            <div class="logo-container">
+                <img src="potoku.png" alt="Logo Desa">
+            </div>
+            <div class="village-title">ABSENSI DESA</div>
+            <div class="village-title">Pemerintah Desa Tanjung Nyiir</div>
             <div class="village-subtitle">Kabupaten Kotabaru</div>
         </div>
 
-        <!-- VIEW 1: PORTAL LOGIN (HANYA KODE AKSES MASUK) -->
         <div class="view-section active" id="view-login">
             <div class="form-header">
                 <h2>Portal Masuk Perangkat</h2>
@@ -365,10 +348,8 @@
             </form>
         </div>
 
-        <!-- VIEW 2: HALAMAN ABSENSI (DASHBOARD) -->
         <div class="view-section" id="view-absen">
             
-            <!-- DASHBOARD UTAMA (NAMA LANGSUNG TIMBUL DI SINI) -->
             <div class="dashboard-box">
                 <div class="user-profile">
                     <i class="fa-solid fa-id-badge profile-icon"></i>
@@ -395,7 +376,6 @@
                 </div>
             </div>
 
-            <!-- FORM ISIAN ABSEN -->
             <form onsubmit="handleAbsen(event)">
                 <div class="input-group">
                     <label>Pilih Kehadiran</label>
@@ -408,7 +388,7 @@
                             <i class="fa-solid fa-kit-medical icon-izin"></i>
                             <span>Izin</span>
                         </div>
-                        <div class="status-card" onclick="pijima('Tugas', this)" onclick="pilihStatus('Tugas', this)">
+                        <div class="status-card" onclick="pilihStatus('Tugas', this)">
                             <i class="fa-solid fa-map-location-dot icon-tugas"></i>
                             <span>Dinas</span>
                         </div>
@@ -445,7 +425,6 @@
 
     </div>
 
-    <!-- POPUP NOTIFIKASI -->
     <div id="android-popup" class="android-popup-overlay">
         <div class="android-popup-card">
             <div id="popup-title-text" class="popup-title">Sistem</div>
@@ -454,13 +433,11 @@
         </div>
     </div>
 
-    <!-- ==========================================
-       7. LOGIKA JAVASCRIPT & DATABASE LENGKAP
-       ========================================== -->
     <script>
         let localStream = null;
         let fileFotoBase64 = null;
         let clockInterval = null;
+        let loggedInNIK = "";      
 
         // 🌟 DATABASE LENGKAP STRUKTUR ORGANISASI PERANGKAT DESA
         const dbPerangkat = {
@@ -480,6 +457,7 @@
             const inputKode = document.getElementById('kode-akses').value.trim();
             
             if (dbPerangkat[inputKode]) {
+                loggedInNIK = inputKode; 
                 const user = dbPerangkat[inputKode];
                 
                 // Tempel data otomatis ke halaman dashboard
@@ -508,9 +486,9 @@
                 document.getElementById('txt-jam').innerText = `${j}:${m}:${d}`;
                 
                 const hari = namaHari[sekarang.getDay()];
-                const tgl = sekarang.getDate(); // Perbaikan bug variabel 'Clinical' sebelumnya
+                const tgl = sekarang.getDate(); 
                 const bln = namaBulan[sekarang.getMonth()];
-                const thn = Clinical = sekarang.getFullYear();
+                const thn = sekarang.getFullYear();
                 document.getElementById('txt-tanggal').innerText = `${hari}, ${tgl} ${bln} ${thn}`;
             }, 1000);
         }
@@ -573,17 +551,61 @@
             document.getElementById('laser-effect').style.display = 'block';
         }
 
+        // 🌟 FUNGSI UTAMA: PROSES & KIRIM LANGSUNG KE GOOGLE SHEETS
         function handleAbsen(event) {
             event.preventDefault();
+            
+            // 1. Validasi Foto Wajib Ada
             if (!fileFotoBase64) {
                 tampilkanPopup("Gagal Kirim", "Foto wajah wajib diambil untuk verifikasi absensi.");
                 return;
             }
-            tampilkanPopup("Berhasil", "Data absensi desa Anda sudah sukses tercatat.");
+
+            // 2. Ambil data Status Kehadiran dari input hidden
+            const statusTerpilih = document.getElementById('kehadiran').value;
             
-            document.getElementById('kode-akses').value = '';
-            ulangFoto();
-            switchView('view-login');
+            // 3. Ambil Nama Perangkat Berdasarkan NIK Login
+            let namaPerangkat = "Tidak Diketahui";
+            if (dbPerangkat[loggedInNIK]) {
+                namaPerangkat = dbPerangkat[loggedInNIK].nama;
+            }
+
+            tampilkanPopup("Memproses", "Sedang mengirim data dan mengunggah foto...");
+
+            // 🌟 TUGAS MAS ADI: GANTI TULISAN DI BAWAH INI DENGAN URL APPS SCRIPT ANDA
+            const urlGoogleSheet = "https://script.google.com/macros/s/AKfycbyf0pweQ6DhoqgvJxG1Obsk-GH1iqMaNYYZ6sVC9Kd4HWK4bddwkBvBVHPqPJviGY1fyA/exec";
+
+            // Menyusun data lengkap untuk dikirim ke Google Sheets
+            const dataYangDikirim = {
+                nik: loggedInNIK,
+                nama: namaPerangkat,
+                status: statusTerpilih,
+                foto: fileFotoBase64
+            };
+
+            // Proses Pengiriman Online (Fetch)
+            fetch(urlGoogleSheet, {
+                method: "POST",
+                body: JSON.stringify(dataYangDikirim)
+            })
+            .then(response => response.json())
+            .then(hasil => {
+                if (hasil.status === "sukses") {
+                    tampilkanPopup("Sukses", "Absensi " + namaPerangkat + " Berhasil Tercatat!");
+                    
+                    // Reset Form Kembali ke Menu Login Awal
+                    document.getElementById('kode-akses').value = '';
+                    loggedInNIK = "";
+                    ulangFoto();
+                    switchView('view-login');
+                } else {
+                    tampilkanPopup("Gagal", "Gagal mencatat: " + hasil.pesan);
+                }
+            })
+            .catch(error => {
+                tampilkanPopup("Error", "Gagal terhubung ke server Google Sheets. Periksa Internet Anda.");
+                console.error(error);
+            });
         }
 
         function tampilkanPopup(judul, pesan) {
@@ -591,67 +613,14 @@
             document.getElementById('popup-body-text').innerText = pesan;
             document.getElementById('android-popup').classList.add('active');
         }
-        function tutupPopup() { document.getElementById('android-popup').classList.remove('active'); }
+        
+        function tutupPopup() { 
+            document.getElementById('android-popup').classList.remove('active'); 
+        }
         
         window.onload = () => {
             document.body.style.backgroundImage = "url('pemandangan.jpg')";
-
-        };// 🌟 PASTIKAN VARIABEL FOTO INI MENAMPUNG HASIL EPS JEPRETAN KAMERA ANDA
-// Biasanya diisi saat tombol "Ambil Foto" diklik: dataFotoBase64 = canvas.toDataURL('image/jpeg');
-var dataFotoBase64 = ""; 
-
-function kirimDataAbsen() {
-    var inputNIK = document.querySelector('input[type="text"]').value; // Mengambil NIK input
-    var statusTerpilih = document.querySelector('.status-btn.active')?.innerText || "Hadir"; // Menyesuaikan tombol status aktif
-
-    if (!inputNIK) {
-        tampilkanPopup("Peringatan", "Silakan masukkan ID/NIK Anda terlebih dahulu!");
-        return;
-    }
-
-    // 🌟 MENGAMBIL NAMA PERANGKAT SECARA OTOMATIS
-    // Menyelaraskan dengan database array dbPerangkat yang Anda miliki di kode
-    var namaPerangkat = "Tidak Diketahui";
-    if (typeof dbPerangkat !== 'undefined' && dbPerangkat[inputNIK]) {
-        namaPerangkat = dbPerangkat[inputNIK].nama; // Sesuaikan dengan struktur isi dbPerangkat Anda
-    } else {
-        namaPerangkat = "Nama Tidak Terdaftar"; 
-    }
-
-    tampilkanPopup("Memproses", "Sedang mengirim data dan mengunggah foto...");
-
-    // 🌟 MASUKKAN URL APLIKASI WEB BARU ANDA DI SINI
-    var urlGoogleSheet = "https://script.google.com/macros/s/AKfycbyf0pweQ6DhoqgvJxG1Obsk-GH1iqMaNYYZ6sVC9Kd4HWK4bddwkBvBVHPqPJviGY1fyA/exec";
-
-    // Menyusun semua data paket untuk dikirim
-    var dataYangDikirim = {
-        nik: inputNIK,
-        nama: namaPerangkat,
-        status: statusTerpilih,
-        foto: dataFotoBase64 // Mengirim teks base64 foto ke server
-    };
-
-    fetch(urlGoogleSheet, {
-        method: "POST",
-        body: JSON.stringify(dataYangDikirim)
-    })
-    .then(response => response.json())
-    .then(hasil => {
-        if (hasil.status === "sukses") {
-            tampilkanPopup("Sukses", "Absensi " + namaPerangkat + " Berhasil Tercatat!");
-            // Reset form jika diperlukan
-            document.querySelector('input[type="text"]').value = "";
-            dataFotoBase64 = ""; // Reset tampungan foto
-        } else {
-            tampilkanPopup("Gagal", "Gagal mencatat: " + hasil.pesan);
-        }
-    })
-    .catch(error => {
-        tampilkanPopup("Error", "Gagal terhubung ke server Google Sheets.");
-        console.error(error);
-    });
-}
-
+        };
     </script>
 </body>
 </html>
