@@ -78,24 +78,21 @@
         }
 
         .logo-container {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #ffffff;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            border: 3px solid var(--primary-color);
-            margin-bottom: 10px;
-        }
+    height: 85px;        /* Atur tinggi maksimal logo di sini */
+    width: auto;         /* Lebar otomatis mengikuti proporsi logo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+}
 
-        .logo-container svg {
-            width: 55%;
-            height: 55%;
-            fill: var(--primary-color);
-        }
+.logo-container img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+
 
         .village-title {
             font-size: 13px;
